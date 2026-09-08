@@ -1,0 +1,50 @@
+{
+  "catalog": {
+    "apollo_gold": {
+      "name": "Apollo Gold License",
+      "sfdc_pricebook_entry_id": "01ubm00000894xRAAQ",
+      "billing_type": "ARR",
+      "icp_min_revenue": 100000000,
+      "list_price": 300
+    },
+    "apollo_silver": {
+      "name": "Apollo Silver License",
+      "sfdc_pricebook_entry_id": "01ubm00000894z3AAA",
+      "billing_type": "ARR",
+      "icp_min_revenue": 25000000,
+      "list_price": 200
+    },
+    "apollo_bronze": {
+      "name": "Apollo Bronze License",
+      "sfdc_pricebook_entry_id": "01ubm000008952HAAQ",
+      "billing_type": "ARR",
+      "icp_min_revenue": 0,
+      "list_price": 100
+    },
+    "crm_integration": {
+      "name": "CRM Integration",
+      "sfdc_pricebook_entry_id": "01ubm00000894vpAAA",
+      "billing_type": "One-Time",
+      "list_price": 1000
+    }
+  },
+  "discount_playbook": {
+    "competitors": {
+      "zoominfo": { "max_discount_pct": 25, "rationale": "Enterprise match required" },
+      "cognism": { "max_discount_pct": 15, "rationale": "Mid-market match" },
+      "lusha": { "max_discount_pct": 10, "rationale": "SMB point solution match" }
+    },
+    "term_lengths": {
+      "multi-year": { "max_discount_pct": 10, "rationale": "Seller may offer up to this license discount when the customer is open to multi-year; do not auto-apply" },
+      "2 year": { "max_discount_pct": 10, "rationale": "Seller may offer up to this license discount when the customer is open to multi-year; do not auto-apply" }
+    }
+  },
+  "approval_matrix": {
+    "tiers": [
+      {"max_pct": 10, "level": "Auto-Approved (No Approval Needed)"},
+      {"max_pct": 20, "level": "Sales Manager"},
+      {"max_pct": 30, "level": "VP of Sales"},
+      {"max_pct": 100, "level": "Deal Desk"}
+    ]
+  }
+}
