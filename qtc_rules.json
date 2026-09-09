@@ -2,14 +2,14 @@
   "catalog": {
     "apollo_gold": {
       "name": "Apollo Gold License",
-      "sfdc_pricebook_entry_id": "01ubm00000894xRAAQ",
+      "sfdc_pricebook_entry_id": "01ubm00000896w1AAA",
       "billing_type": "ARR",
       "icp_min_revenue": 100000000,
       "list_price": 300
     },
     "apollo_silver": {
       "name": "Apollo Silver License",
-      "sfdc_pricebook_entry_id": "01ubm00000894z3AAA",
+      "sfdc_pricebook_entry_id": "01ubm00000896zFAAQ",
       "billing_type": "ARR",
       "icp_min_revenue": 25000000,
       "list_price": 200
@@ -23,20 +23,24 @@
     },
     "crm_integration": {
       "name": "CRM Integration",
-      "sfdc_pricebook_entry_id": "01ubm00000894vpAAA",
+      "sfdc_pricebook_entry_id": "01ubm00000896rBAAQ",
       "billing_type": "One-Time",
       "list_price": 1000
     }
   },
   "discount_playbook": {
+    "competitor_response": {
+      "when_named_in_transcript": "Named competitor. Address packaging and value (what is in their platform vs our add-on).",
+      "packaging_gaps": "If they name a competitor that includes integration with CRM in-platform and we sell integration with CRM as an add-on, surface that gap and let the seller choose keep / discount / waive that fee. Waiving is 100% on that line and routes to Deal Desk."
+    },
     "competitors": {
-      "zoominfo": { "max_discount_pct": 25, "rationale": "Enterprise match required" },
-      "cognism": { "max_discount_pct": 15, "rationale": "Mid-market match" },
-      "lusha": { "max_discount_pct": 10, "rationale": "SMB point solution match" }
+      "zoominfo": { "max_discount_pct": 25, "rationale": "Named competitor — packaging gap is integration with CRM in their core vs our add-on." },
+      "cognism": { "max_discount_pct": 15, "rationale": "Named competitor — packaging and value." },
+      "lusha": { "max_discount_pct": 10, "rationale": "Named competitor — packaging and value." }
     },
     "term_lengths": {
-      "multi-year": { "max_discount_pct": 10, "rationale": "Seller may offer up to this license discount when the customer is open to multi-year; do not auto-apply" },
-      "2 year": { "max_discount_pct": 10, "rationale": "Seller may offer up to this license discount when the customer is open to multi-year; do not auto-apply" }
+      "multi-year": { "max_discount_pct": 10, "rationale": "When they are open to multi-year, offer two options: 1-year at list, or multi-year with up to this license discount. Seller chooses; do not auto-apply." },
+      "2 year": { "max_discount_pct": 10, "rationale": "When they are open to multi-year, offer two options: 1-year at list, or multi-year with up to this license discount. Seller chooses; do not auto-apply." }
     }
   },
   "approval_matrix": {

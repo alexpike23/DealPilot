@@ -1,5 +1,6 @@
 .env
 .venv/
+.venv-pptx/
 __pycache__/
 *.pyc
 .DS_Store

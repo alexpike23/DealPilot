@@ -169,6 +169,7 @@ if args.action == "analyze":
         "estimated_revenue": revenue,
         "suggested_tier": tier_name,
         "seats": args.seats,
+        "contract_term": opp.get("Contract_Term__c"),
         "target_discount_pct": target_discount_pct,
         "approval_tier": approval_tier,
         "justification": "; ".join(justifications) if justifications else "Standard pricing",
@@ -179,29 +180,54 @@ if args.action == "analyze":
 
 elif args.action == "commit" and args.payload:
     data = json.loads(args.payload)
-    
-    line_items = []
+
+    desired = []
     total_amount = 0
     for line in data["quote_lines"]:
-        line_items.append({
-            "OpportunityId": args.opp_id,
-            "PricebookEntryId": line["id"],
-            "Quantity": line["quantity"],
-            "UnitPrice": line["price"]
-        })
-        total_amount += (line["price"] * line["quantity"])
-        
-    sf.bulk.OpportunityLineItem.insert(line_items)
+        pbe = line["id"]
+        qty = line["quantity"]
+        price = line["price"]
+        desired.append({"PricebookEntryId": pbe, "Quantity": qty, "UnitPrice": price})
+        total_amount += price * qty
+
+    existing = sf.query(
+        "SELECT Id, PricebookEntryId, Quantity, UnitPrice "
+        f"FROM OpportunityLineItem WHERE OpportunityId = '{args.opp_id}'"
+    )["records"]
+    existing_by_pbe = {row["PricebookEntryId"]: row for row in existing}
+    desired_pbes = {row["PricebookEntryId"] for row in desired}
+
+    to_delete = [row["Id"] for pbe, row in existing_by_pbe.items() if pbe not in desired_pbes]
+    for line_id in to_delete:
+        sf.OpportunityLineItem.delete(line_id)
+
+    for row in desired:
+        current = existing_by_pbe.get(row["PricebookEntryId"])
+        if current:
+            sf.OpportunityLineItem.update(current["Id"], {
+                "Quantity": row["Quantity"],
+                "UnitPrice": row["UnitPrice"],
+            })
+        else:
+            sf.OpportunityLineItem.create({
+                "OpportunityId": args.opp_id,
+                "PricebookEntryId": row["PricebookEntryId"],
+                "Quantity": row["Quantity"],
+                "UnitPrice": row["UnitPrice"],
+            })
 
     comment = data.get("approval_comment") or (
         f"Deal Desk System: Discount {data['target_discount_pct']}% applied. "
         f"Routing to {data['approval_tier']}."
     )
-    sf.Opportunity.update(args.opp_id, {
+    opp_fields = {
         "Amount": total_amount,
         "Description": f"Submitted for {data['approval_tier']}. See Approval Submission Comment.",
         "Approval_Submission_Comment__c": comment
-    })
+    }
+    if data.get("contract_term") is not None and data.get("contract_term") != "":
+        opp_fields["Contract_Term__c"] = str(data["contract_term"])
+    sf.Opportunity.update(args.opp_id, opp_fields)
     
     if data['target_discount_pct'] > 10:
         refreshed = sf.Opportunity.get(args.opp_id)

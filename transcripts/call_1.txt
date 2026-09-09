@@ -1,3 +1,4 @@
-Customer: We are growing fast and currently have about 50 reps. We are very interested in Apollo.
-Rep: That's great! We can definitely support a team of 50.
-Customer: We are evaluating ZoomInfo right now as well. They have CRM functionality included, but it sounds like that is not part of your core offer. We could do a multi-year if the overall package makes sense. Can you put together pricing for us?
+Rep: Thanks for taking the time. Roughly how many reps would we be covering?
+Customer: We are growing fast — about 50 sellers on the floor today.
+Rep: Got it. Anything else we should know while we put a package together?
+Customer: We are evaluating ZoomInfo as well. Their platform includes integration with CRM. It sounds like integration with CRM is not part of your core license — it is an add-on on your side. That gap matters to us.

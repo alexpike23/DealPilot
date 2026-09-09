@@ -2,7 +2,7 @@
 
 **A deal copilot for the early sale** — score the opportunity against how *this* sales org actually sells, then show the seller where they have leverage before they put a proposal in front of the customer.
 
-DealPilot reads the **Salesforce opportunity**, **discovery transcripts**, **Apollo revenue** on the linked account, and the **internal sales and pricing playbook**. It treats that playbook as org best practice: ICP bands, what we will and will not discount, how we package against competitors, and when term is a legitimate lever. From that, it points out **where the deal can be strengthened** (fit, packaging, term, competitive response) so the proposal is built to close — not guessed from memory.
+DealPilot reads the **Salesforce opportunity**, **each discovery transcript as its own evidence**, **Apollo revenue** on the linked account, and the **internal sales and pricing playbook**. It starts by analyzing those calls against the opp so you can **decide price**: named competitors (packaging gap, e.g. integration with CRM), then two term options (1-year at list vs multi-year with playbook discount). On **Accept** it **updates key opportunity fields, generates opportunity products, and submits for approval**.
 
 It still walks commercials one decision at a time, tells you **which approvals the org will require**, and on **Accept** it **updates key opportunity fields, generates opportunity products, and submits for approval**. Evaluation first; CRM busywork last.
 
@@ -21,26 +21,24 @@ Early deals stall when the call, the CRM record, and the playbook never get comp
 ## What it evaluates (early process)
 
 1. **Fit vs how we sell.** Apollo `annual_revenue` from the **Account website/domain in Salesforce** (not a number from the call) vs ICP bands in the playbook — Gold / Silver / Bronze is org policy, not a guess.
-2. **Discovery quality.** Seats, competitive context, multi-year intent, and packaging gaps are pulled from the transcript and checked against the opportunity.
-3. **Levers that help close.** For example:
-   - Customer is **open to multi-year** → playbook **allows** a license discount up to the cap; seller chooses multi-year vs 1-year at list (never auto-applied).
-   - Competitor **includes CRM**; we sell it as an add-on → keep, discount, or waive is a close decision, with Deal Desk called out if you waive.
-   - Do **not** match ZoomInfo’s license % on our SKUs — that is not our motion.
+2. **Each transcript, separately.** `transcripts/call_1.txt` (50 seats, ZoomInfo, integration with CRM gap) and `transcripts/call_2.txt` (multi-year; **60 licenses**, not 50). Mock demo files — they do not have to match the Salesforce account name.
+3. **Price decisions against the playbook.**
+   - Call 1 names ZoomInfo and integration with CRM in-platform → keep / discount / waive our add-on.
+   - Call 2 is open to multi-year → two options: 1-year at list (60 seats) or multi-year with up to the playbook license discount. Seller chooses.
 4. **What it will take internally.** Sales Manager / VP / Deal Desk / auto-approve, so the proposal you take to the customer is one the org can actually sign.
 
 ## How a run works
 
-Ask in plain language — no Opportunity Id required:
+Ask in plain language — no Opportunity Id required. The skill searches Salesforce Opportunity / Account names for what you said:
 
-> Pike Industries Full Module Deal
+> Help me create a proposal for the Apollo copilot deal
 
-1. **Find the opportunity** from what you said (name / account search in Salesforce). Confirm if more than one match.
+1. **Find the opportunity** from that language (name / account search). Confirm if more than one match; if none, it lists recent open opps.
 2. **Enrich revenue in Apollo** using the **website/domain on the Account linked to that opportunity** — and say so, so the ICP number is not invented and not taken from the transcript.
-3. **Read the transcript** against org practice: seats, competitive context, multi-year intent, CRM in *their* core product vs *our* add-on.
-4. **Score against the playbook** (`qtc_rules.json`): catalog, ICP bands, multi-year discount *allowance*, competitor notes, approval matrix.
-5. **Surface leverage, then decide with you, one lever at a time** (term, then CRM packaging if it is live).
-6. **Summarize the proposal and the approvals** that will fire in Salesforce.
-7. On **Accept**, expedite ops: opportunity products, amount, `Approval_Submission_Comment__c`, stage, and approval submit when the discount requires it.
+3. **Read each mock transcript as its own file** (`transcripts/call_1.txt`, `transcripts/call_2.txt`) and score it against the playbook.
+4. **Brief first:** concise what-happened + recommended deal structure (60 licenses, integration with CRM, two term options).
+5. **Decide with you:** integration with CRM from call 1, then 1-year at list vs multi-year discount from call 2.
+6. **Summarize and Accept** — then products, opp fields, approval submit when required.
 
 ## Repo layout
 
@@ -49,7 +47,8 @@ Ask in plain language — no Opportunity Id required:
 | `.cursor/skills/deal-copilot/SKILL.md` | Agent playbook: evaluate early deal vs org practice, sequential levers, Accept gate |
 | `scripts/deal_desk.py` | Salesforce + Apollo analyze and commit |
 | `qtc_rules.json` | Internal best practice: list prices, ICP bands, term discount cap, approval routing |
-| `transcripts/call_1.txt` | Sample discovery call |
+| `transcripts/call_1.txt` | Mock call: 50 seats, ZoomInfo, integration with CRM vs our add-on |
+| `transcripts/call_2.txt` | Mock call: multi-year; now **60 licenses**; two term options |
 | `.env.example` | Credential names only — never commit real secrets |
 
 ## Setup
@@ -69,26 +68,31 @@ pip3 install -r requirements.txt
    - Price book entries aligned to Ids in `qtc_rules.json`
    - Account **Website** populated so Apollo can enrich by domain
    - `Approval_Submission_Comment__c` on Opportunity (submission comment is written here and sent on the approval request)
+   - `Contract_Term__c` on Opportunity (picklist `1` / `2` / `3` years; written on Accept)
 5. `.env` is gitignored. Do not commit it.
 
 ## How to run
 
 In Cursor, in this project:
 
-- “Pike Industries Full Module Deal”
-- “Help me create a proposal for Pike Industries Full Module Deal”
+- “Help me create a proposal for the Apollo copilot deal”
+- “Quote the Deal Copilot v2 opportunity”
 
 CLI (optional):
 
 ```bash
-python3 scripts/deal_desk.py --opp_id "<OPP_ID>" --action analyze --seats 50 --transcript "$(cat transcripts/call_1.txt)"
+python3 scripts/deal_desk.py --opp_id "<OPP_ID>" --action analyze --seats 60 --transcript "$(cat transcripts/call_1.txt transcripts/call_2.txt)"
 python3 scripts/deal_desk.py --opp_id "<OPP_ID>" --action commit --payload '<JSON>'
 ```
 
 Commit only runs after **Accept**. Over 10% discount: stage **Pending Approval** and approval-process submit. 10% or under: **Negotiation/Review**, no approval submit.
 
+## One-pager
+
+[`docs/DealPilot-one-pager.pptx`](docs/DealPilot-one-pager.pptx) — one widescreen slide (open in PowerPoint / Keynote / Google Slides). HTML copy: [`docs/DealPilot-one-pager.html`](docs/DealPilot-one-pager.html).
+
 ## Interview / demo notes
 
-- **ICP is Apollo, not the call.** Transcript revenue is ignored on purpose so early-stage “they said $40M” does not override org enrich.
-- **Multi-year is a close lever, not a default discount.** The seller chooses 1-year list vs multi-year within the playbook cap.
-- **CRM packaging is a close lever.** If ZoomInfo includes CRM and we charge an add-on, the copilot asks keep / discount / waive — and flags Deal Desk if the fee is waived (100% on that line).
+- **ICP is Apollo, not the call.** Transcript revenue is ignored on purpose.
+- **Call 1 → competitor packaging.** Named ZoomInfo + integration with CRM in their core: keep / discount / waive our add-on.
+- **Call 2 → 60 licenses + two term options.** 1-year at list vs multi-year with playbook license discount. Seller chooses.

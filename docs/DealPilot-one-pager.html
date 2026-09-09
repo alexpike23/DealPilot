@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>DealPilot — GTM one-pager</title>
+  <style>
+    @page { size: 13.333in 7.5in landscape; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 13.333in;
+      height: 7.5in;
+      overflow: hidden;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #1a2332;
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .slide {
+      width: 13.333in;
+      height: 7.5in;
+      padding: 0.28in 0.32in 0.22in;
+      display: flex;
+      flex-direction: column;
+      gap: 0.12in;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 3px solid #0b3d5c;
+      padding-bottom: 0.08in;
+    }
+    h1 {
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    h1 span { color: #0b3d5c; }
+    .tagline {
+      font-size: 11.5px;
+      color: #3d4a5c;
+      margin-top: 2px;
+      max-width: 9.2in;
+    }
+    .meta {
+      text-align: right;
+      font-size: 10px;
+      color: #5a6573;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1.15fr 1.35fr 1fr;
+      gap: 0.14in;
+      flex: 1;
+      min-height: 0;
+    }
+    section {
+      border: 1px solid #d7dee6;
+      background: #f7f9fb;
+      padding: 0.12in 0.13in 0.1in;
+      display: flex;
+      flex-direction: column;
+      gap: 0.06in;
+    }
+    h2 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #0b3d5c;
+      border-bottom: 1px solid #c5d0db;
+      padding-bottom: 0.04in;
+    }
+    p, li { font-size: 10.5px; line-height: 1.32; color: #243040; }
+    ul { padding-left: 0.16in; }
+    li { margin-bottom: 0.04in; }
+    strong { color: #132033; }
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .step {
+      flex: 1;
+      background: #fff;
+      border: 1px solid #c5d0db;
+      padding: 0.07in 0.06in;
+      font-size: 9.5px;
+      line-height: 1.25;
+      text-align: center;
+    }
+    .step b { display: block; color: #0b3d5c; font-size: 9px; margin-bottom: 2px; }
+    .arrow { align-self: center; color: #0b3d5c; font-size: 12px; font-weight: 700; }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.08in;
+      margin-top: 0.02in;
+    }
+    .box {
+      background: #fff;
+      border: 1px solid #c5d0db;
+      padding: 0.07in 0.08in;
+    }
+    .box h3 { font-size: 10px; color: #0b3d5c; margin-bottom: 3px; }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 9px;
+      color: #5a6573;
+      border-top: 1px solid #d7dee6;
+      padding-top: 0.06in;
+    }
+    footer a { color: #0b3d5c; text-decoration: none; }
+    .print-hint {
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      font-size: 12px;
+      background: #0b3d5c;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+    @media print { .print-hint { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <header>
+      <div>
+        <h1>DealPilot <span>— early-deal copilot for GTM</span></h1>
+        <p class="tagline">Score the opportunity against how this sales org actually sells, surface leverage for the proposal, then write Salesforce only after Accept.</p>
+      </div>
+      <div class="meta">
+        Alex Pike · GTM Business Systems exercise<br />
+        Cursor Agent Skill · Salesforce + Apollo
+      </div>
+    </header>
+
+    <div class="row">
+      <section>
+        <h2>The problem</h2>
+        <p>Early in a deal, the call, the CRM record, and the pricing playbook rarely get compared. Reps guess tier and discount, copy a competitor’s % onto the wrong SKU, and find out approvals after they have already quoted. Deal Desk then unpicks work that never matched org policy.</p>
+        <p><strong>What it unlocks:</strong> a proposal that is legal against internal best practice, with the close levers named (term, packaging, competitive response) and the approval path known before anything is written to Salesforce.</p>
+        <h2 style="margin-top:0.08in;">Assumptions</h2>
+        <ul>
+          <li><code>qtc_rules.json</code> is org truth (ICP bands, term cap, approval matrix).</li>
+          <li>ICP revenue comes from Apollo using the Salesforce Account website — never the transcript.</li>
+          <li>One discovery transcript; seller is the user; they confirm commercial levers.</li>
+          <li>Dev org has SOAP login, price book Ids, and an Opportunity approval process.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>What I built &amp; how it works</h2>
+        <p>A Cursor <strong>Agent Skill</strong> (consultative CPQ) plus a Python script that is the only path to Salesforce and Apollo. The model reasons over structured playbook + CRM + transcript; it does not invent revenue or SKUs.</p>
+        <div class="flow">
+          <div class="step"><b>1. Find opp</b>Plain-language name search in Salesforce</div>
+          <div class="arrow">→</div>
+          <div class="step"><b>2. Enrich</b>Apollo revenue via Account domain</div>
+          <div class="arrow">→</div>
+          <div class="step"><b>3. Score</b>Transcript vs playbook; name the levers</div>
+          <div class="arrow">→</div>
+          <div class="step"><b>4. Decide</b>Term, then CRM, one at a time</div>
+          <div class="arrow">→</div>
+          <div class="step"><b>5. Accept</b>Products, opp fields, approval submit</div>
+        </div>
+        <div class="split">
+          <div class="box">
+            <h3>Systems</h3>
+            <p>Salesforce (read opp/account; write OLIs, Amount, stage, approval comment, submit). Apollo API (<code>X-Api-Key</code>). Local playbook + transcript.</p>
+          </div>
+          <div class="box">
+            <h3>Why a skill, not just a script</h3>
+            <p>Script = deterministic I/O. Skill = sequential GTM judgment and an Accept gate so the model cannot commit a quote the seller did not choose.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Where AI helped — and where I overrode it</h2>
+        <ul>
+          <li>Cursor sped up Salesforce wiring and the skill scaffold.</li>
+          <li><strong>Did not trust / I changed:</strong> API key must be <code>X-Api-Key</code> (query-string key 422s). Fail closed if Apollo enrich fails — no invented revenue. No auto multi-year discount. No ZoomInfo 25% on our licenses. No quote + CRM + Accept in one turn.</li>
+        </ul>
+        <h2 style="margin-top:0.08in;">Harden for production</h2>
+        <ul>
+          <li>OAuth / named credential instead of SOAP password in <code>.env</code>.</li>
+          <li>Tests on enrich, discount math, and approval routing; logging of every write.</li>
+          <li>Multi-transcript / multi-opp; human queue proof for the live approval process (submit is in the POC; a real pending approver click is the next proof).</li>
+          <li>Playbook in Salesforce or a governed store, not only a repo JSON.</li>
+        </ul>
+      </section>
+    </div>
+
+    <footer>
+      <span>Left out on purpose: full CPQ UI, e-sign, quoting every SKU in the catalog. Focused v1: early-deal evaluation + close levers + Salesforce expedite.</span>
+      <span><a href="https://github.com/alexpike23/DealPilot">github.com/alexpike23/DealPilot</a> · Demo: “Pike Industries Full Module Deal”</span>
+    </footer>
+  </div>
+  <div class="print-hint">File → Print → Landscape → Save as PDF · turn on Background graphics</div>
+</body>
+</html>
