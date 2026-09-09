@@ -1,4 +1,4 @@
-Rep: If the commercial structure worked, what term would you actually sign?
-Customer: We are open to a multi-year deal if the overall package makes sense. We do not need to stay on a one-year paper if a longer term is a better value.
-Customer: One update from last time — we now need 60 licenses, not the 50 we originally discussed.
-Rep: Understood. We will come back with options rather than a single take-it-or-leave-it price, sized to 60.
+Rep: If the commercial structure worked, what term would you actually sign? Still Apollo.io, Alex Pike, arp.pike@gmail.com.
+Customer: Yes, same account and contact — Apollo.io, Alex Pike, arp.pike@gmail.com. We are open to a multi-year deal if the overall package makes sense. We do not need to stay on a one-year paper if a longer term is a better value.
+Customer: One update from last time — we now need 60 licenses, not the 50 we originally discussed. Integration with CRM still needs to be Salesforce; that is the CRM we use.
+Rep: Understood. We will come back with options rather than a single take-it-or-leave-it price, sized to 60, with integration with CRM into Salesforce.

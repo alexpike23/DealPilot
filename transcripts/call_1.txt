@@ -1,4 +1,4 @@
-Rep: Thanks for taking the time. Roughly how many reps would we be covering?
-Customer: We are growing fast — about 50 sellers on the floor today.
+Rep: Thanks for taking the time. Confirming this is Apollo.io, and I have you as Alex Pike, arp.pike@gmail.com. Roughly how many reps would we be covering?
+Customer: Yes — Alex Pike, arp.pike@gmail.com, for Apollo.io. We are growing fast — about 50 sellers on the floor today.
 Rep: Got it. Anything else we should know while we put a package together?
-Customer: We are evaluating ZoomInfo as well. Their platform includes integration with CRM. It sounds like integration with CRM is not part of your core license — it is an add-on on your side. That gap matters to us.
+Customer: We are evaluating ZoomInfo as well. Their platform includes integration with CRM. Our CRM is Salesforce, so that integration has to land in Salesforce. It sounds like integration with CRM is not part of your core license — it is an add-on on your side. That gap matters to us.

@@ -18,7 +18,7 @@ Follow this flow.
 ### Intake — once, before you talk recommendations
 
 1. **Find the Salesforce opportunity from plain language.** No Opportunity Id required. Query:
-   `SELECT Id, Name, StageName, Amount, Contract_Term__c, AccountId, Account.Name, Account.Website FROM Opportunity WHERE Name LIKE '%<keywords>%' OR Account.Name LIKE '%<keywords>%' ORDER BY LastModifiedDate DESC LIMIT 10`
+   `SELECT Id, Name, StageName, Amount, Contract_Term__c, CRM__c, Champion__c, Champion__r.Name, AccountId, Account.Name, Account.Website FROM Opportunity WHERE Name LIKE '%<keywords>%' OR Account.Name LIKE '%<keywords>%' ORDER BY LastModifiedDate DESC LIMIT 10`
    Best match (name + account + recency). If several match, list them and ask. If none, list recent open opps and ask. Call out the **Name** you selected.
 2. Load Account and **existing opportunity products**:
    `SELECT Id, Quantity, UnitPrice, PricebookEntry.Name FROM OpportunityLineItem WHERE OpportunityId = '<OPP_ID>'`
@@ -36,7 +36,7 @@ Follow this flow.
 - **Always give the why** from playbook + evidence (which call, Salesforce vs Apollo). No naked “switch to Gold” or “add integration with CRM.”
 - One cluster of asks per turn. Let them push back, change their mind, or ask “why” — answer and stay in the loop.
 - After they decide a lever, confirm it in one line, then move to the next open lever.
-- **Do not** mention Accept until Gold/Silver, seats, integration with CRM, and term (1-year vs multi-year) are settled (or they skipped one on purpose).
+- **Do not** mention Accept until Gold/Silver, seats, integration with CRM, term (1-year vs multi-year), **and Opportunity validation gaps** are settled (or they skipped one on purpose).
 - **Do not** run commit until they type **Accept**. “Looks good” or “ok” is not Accept — ask them to type Accept to write Salesforce.
 
 ### First message — briefing with reasoning (required)
@@ -64,7 +64,20 @@ Keep consulting. If they only answer Gold and 60, next turn is integration with 
 
 Which to take forward?
 
-When every live lever is chosen, **one** summary (products, totals, contract years, approval path). Then: type **Accept** to commit to Salesforce. If they want to change something, go back. No commit until Accept.
+When every live commercial lever is chosen, **do not** jump to Accept yet. Re-read analyze `validation_preflight` for the **target stage** (discount > 10% → Pending Approval; else Negotiation/Review).
+
+**Validation (required before Accept).** Salesforce will reject the stage move if Opportunity validation rules fire. Use the preflight gaps, not a guess.
+
+- Call out each blocking rule in plain language (field + Salesforce error message).
+- **CRM__c** is the Opportunity picklist (which CRM they run). It is not the catalog add-on. Keep saying **integration with CRM** for the product.
+- For each blank required field: if transcripts or the opp give a value, **propose it** and say the evidence (which call, Contact match, picklist). Example: transcripts say the CRM is Salesforce → propose `CRM__c` = Salesforce. Transcripts name Alex Pike / email → propose `Champion__c` as that Contact if Salesforce has the match.
+- If you cannot map a field (no transcript clue, no Contact), **ask the seller**. Do not invent a Contact Id.
+- Wait for them to confirm, correct, or supply the missing value.
+- Confirmed fills go on the commit payload as `opportunity_fields` (e.g. `{"CRM__c":"Salesforce","Champion__c":"<contact id>"}`).
+
+If preflight `gaps` is empty for the target stage, skip this ask.
+
+Then **one** summary (products, totals, contract years, approval path, validation fields). Then: type **Accept** to commit to Salesforce. If they want to change something, go back. No commit until Accept.
 
 ### Commit (only after Accept)
 
@@ -74,12 +87,14 @@ Payload from **their** choices, not analyze:
 - `contract_term`: years of the contract as `"1"`, `"2"`, or `"3"` (Salesforce `Contract_Term__c`). 1-year at list → `"1"`. If they pick multi-year, use the years they named (ask 2 vs 3 if they only said multi-year).
 - `target_discount_pct` (highest on the quote; waived add-on = 100% on that line).
 - `approval_comment`, `approval_tier`.
+- `opportunity_fields`: confirmed validation fills (`CRM__c`, `Champion__c`, any other preflight fields). Omit keys you did not confirm.
 
 python scripts/deal_desk.py --opp_id "<OPP_ID>" --action commit --payload '<CHOSEN_JSON_PAYLOAD>'
 
 On commit:
 - Same SKU: update qty/price. Different SKU (Silver → Gold): replace that license line (PBE is not editable in place).
 - Waived integration with CRM: second line at $0.
-- Amount, `Contract_Term__c`, `Approval_Submission_Comment__c`. Discount > 10%: **Pending Approval** + submit approval. Else **Negotiation/Review**, no submit.
+- Amount, `Contract_Term__c`, `Approval_Submission_Comment__c`, `opportunity_fields`, and **StageName in the same Opportunity update**. Discount > 10%: **Pending Approval** + submit approval. Else **Negotiation/Review**, no submit.
+- If the script returns `VALIDATION_BLOCKED`, show the Salesforce error, propose or ask for the field, and do **not** claim success. Retry commit only after they confirm the fill and type **Accept** again (or clearly tell you to retry).
 
 Confirm what Salesforce did. Do not invent a successful write if the script failed.
